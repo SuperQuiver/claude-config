@@ -283,8 +283,8 @@ plot_output.png
 - **コミットメッセージ**: 英語、1行目は動詞始まり（`Add`, `Fix`, `Update`）
 - **大きなファイル**: PDF 等で push が失敗したら `git config http.postBuffer 157286400`
 - **バージョン管理**: ファイル名に番号をつけない（`fixed1`, `fixed2` 等は禁止）。git がバージョン管理する。
-- **機密情報**: `.env`, `credentials`, 個人情報を含むファイルはコミットしない
-- **コミット後は常に push**: `git commit` したら `git push` まで行う（push 前チェック §3 を挟んでから push する。commit だけで放置しない、という意味）。
+- **機密情報**: `.env`, `credentials`, 個人情報を含むファイルはコミットしない（§10-5 も参照）
+- **コミット後は常に push**: `git commit` したら必ず `git push` まで行う（push 前チェック §3 を挟む）。
 - **セッション終了時は必ず commit + push**: 作業が一段落したとき・ユーザーとの会話が終わりそうなとき、未コミットの変更があれば commit & push してから終了する。変更を手元に残したまま終わらない。
 - **グローバル gitignore**: `~/.gitignore_global` で TeX 中間ファイル（*.aux, *.bbl, *.blg, *.log, *.out, *.synctex.gz 等）と .DS_Store をグローバルに除外済み。**共有リポジトリ**の `.gitignore` にも TeX 除外ルールを含める（共同編集者はグローバル設定を持っていないため）。ローカル専用リポはグローバルに任せてプロジェクト固有のみでOK。
 
@@ -307,7 +307,7 @@ plot_output.png
 | EMrel | ~/Claude/EMrel | 電磁相対論 | main |
 | webGL-test | ~/Claude/webGL-test | WebGLテスト | main |
 | claude-config | ~/Claude/claude-config | 共通設定（CONVENTIONS.md等） | main |
-| arxiv-digest | ~/Claude/arxiv-digest | arXiv ダイジェスト | main |
+| arxiv-digest | ~/Claude/arxiv-digest | arXiv ダイジェスト（public） | main |
 | gmail-mcp-config | ~/Claude/gmail-mcp-config | Gmail MCP 設定 | main |
 
 **注意**: odakin のリポのみ操作する。yohey-w は絶対に触らない。
@@ -322,7 +322,7 @@ plot_output.png
 2. **ユーザーの既存データを削除するときはリネーム (`mv old old.bak`) を優先提案する。**
 3. ユーザーにコマンドを提示する際は、破壊的な操作が含まれていないか必ず確認する。
 4. **force push 禁止**: `git push --force` は使わない。必要なら `--force-with-lease`。
-5. **機密ファイル**: コミットしない（詳細は §8 Git 規約参照）。
+5. **機密ファイル**: `.env`, 認証情報, 個人情報はコミットしない。
 6. **ファイルの重複禁止**: 同じファイルを複数リポに置かない。1つの正本を決める。
 7. **破壊的操作は必ず事前確認**: リポ削除、ブランチ削除、ファイル一括削除、`git reset --hard` など不可逆な操作を行う前に、必ずユーザーに確認を取る。暗黙の了解で実行しない。
 
