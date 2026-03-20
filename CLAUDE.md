@@ -11,9 +11,12 @@
 ## 構造
 ```
 claude-config/
-├── CLAUDE.md        # このファイル
+├── CLAUDE.md        # このファイル（リポ固有の指示書）
 ├── CONVENTIONS.md   # 全リポ共通規約（正本）
+├── README.md        # プロジェクト説明（英語/日本語）
 ├── setup.sh         # symlink セットアップスクリプト
+├── gfm-rules.md     # GFM CJK bold 対策リファレンス
+├── LICENSE          # MIT
 └── .gitignore
 ```
 
@@ -27,6 +30,11 @@ cd claude-config && ./setup.sh
 setup.sh が自動で行うこと:
 1. `~/Claude/CONVENTIONS.md` → `claude-config/CONVENTIONS.md` の相対 symlink 作成
 2. `odakin` の全リポを `~/Claude/` 以下に clone（未取得のもののみ）
+
+## How to Resume
+1. このリポには SESSION.md は不要（永続的な設定リポのため）
+2. 作業内容は CONVENTIONS.md と README.md の変更のみ
+3. 変更後は commit + push（全リモートに）
 
 ## 運用ルール
 - CONVENTIONS.md の正本はこのリポ内のファイル
