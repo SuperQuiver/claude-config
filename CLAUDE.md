@@ -39,6 +39,17 @@ setup.sh が自動で行うこと:
 ## 関連リポ
 - `odakin/zenn-articles` — Zenn.dev 記事（このリポについての記事もそちらに格納）
 
+## 安全規則（公開リポ）
+**このリポは public。** 以下を絶対にコミットしない:
+- 実名（GitHub ユーザー名 `odakin` は可）
+- メールアドレス
+- 非公開リポ名（asset-management 等）
+- 金融データ・口座情報
+- 所属機関名
+- 他ユーザーのユーザー名
+
+変更前に「公開リポに載せて問題ないか」を必ず確認すること。
+
 ## 運用ルール
 - CONVENTIONS.md の正本はこのリポ内のファイル
 - `~/Claude/CONVENTIONS.md` は symlink（setup.sh が作成）
