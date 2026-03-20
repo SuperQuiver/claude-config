@@ -9,7 +9,7 @@
 ```bash
 # 新規作成
 cd ~/Claude
-gh repo create odakin/<name> --private --description "<説明>" --clone
+gh repo create odakin/<name> --private --description "<English description>" --clone
 cd <name> && git branch -M main
 # 必須ファイル作成（§2参照）→ initial commit + push
 git add . && git commit -m "Initial commit: <概要>" && git push -u origin main
@@ -18,6 +18,8 @@ git add . && git commit -m "Initial commit: <概要>" && git push -u origin main
 gh repo list odakin --limit 50 --json name  # 一覧取得
 gh repo clone odakin/<name>                  # clone
 ```
+
+- **リポの description（`--description`）は必ず英語で書く。** dev.to 等の embed カードに表示されるため。
 
 リポ一覧の正本は **MEMORY.md**。新規作成・clone 後は MEMORY.md に追記。
 
