@@ -1,7 +1,7 @@
 # claude-config
 
 ## 概要
-`~/Claude` 共通設定ファイルを管理する設定リポ。どの端末でも clone + setup.sh で同じ規約が適用される。
+`~/github` 共通設定ファイルを管理する設定リポ。どの端末でも clone + setup.sh で同じ規約が適用される。
 
 ## リポジトリ情報
 - パス: `~/github/claude-config/`
@@ -31,9 +31,10 @@ cd claude-config && ./setup.sh
 ```
 
 setup.sh が自動で行うこと:
-1. `~/Claude/CONVENTIONS.md` → `claude-config/CONVENTIONS.md` の相対 symlink 作成
+1. `~/github/CONVENTIONS.md` → `claude-config/CONVENTIONS.md` の symlink（Windows は cp）
 2. Claude Code hooks を `~/.claude/hooks/` に symlink + `settings.json` に設定マージ
-3. `odakin` の全リポを `~/Claude/` 以下に clone（未取得のもののみ）
+3. git post-merge hook をインストール（`git pull` 後に hooks と CONVENTIONS.md を自動同期）
+4. `SuperQuiver` の全リポを `~/github/` 以下に clone（未取得のもののみ）
 
 ## How to Resume
 1. このリポには SESSION.md は不要（永続的な設定リポのため）
@@ -41,7 +42,7 @@ setup.sh が自動で行うこと:
 3. 変更後は commit + push（全リモートに）
 
 ## 関連リポ
-- `SuperQuiver/neutrino-covariant-wp` — ニュートリノ波束コバリアント計算
+- `odakin/neutrino-covariant-wp` — ニュートリノ波束コバリアント計算
 
 ## 安全規則（公開リポ）
 **このリポは public。** 以下を絶対にコミットしない:
@@ -56,7 +57,7 @@ setup.sh が自動で行うこと:
 
 ## 運用ルール
 - CONVENTIONS.md の正本はこのリポ内のファイル
-- `~/Claude/CONVENTIONS.md` は symlink（setup.sh が作成）
+- `~/github/CONVENTIONS.md` は symlink（setup.sh が作成。Windows は cp + post-merge hook で自動同期）
 - CONVENTIONS.md を変更したらこのリポで commit + push
 - 他端末では `git pull` で同期
 

@@ -1,4 +1,4 @@
-# ~/Claude リポジトリ規約
+# ~/github リポジトリ規約
 
 最終更新: 2026-03-22
 
@@ -8,7 +8,7 @@
 
 ```bash
 # 新規作成
-cd ~/Claude
+cd ~/github
 gh repo create SuperQuiver/<name> --private --description "<English description>" --clone
 cd <name> && git branch -M main
 # 必須ファイル作成（§2参照）→ initial commit + push

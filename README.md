@@ -35,14 +35,16 @@ Each project's `CLAUDE.md` references `~/github/CONVENTIONS.md` for shared rules
 ## Quick Start
 
 ```bash
-mkdir -p ~/Claude && cd ~/Claude
+mkdir -p ~/github && cd ~/github
 gh repo clone <your-username>/claude-config
 cd claude-config && ./setup.sh
 ```
 
 `setup.sh` will:
 1. Create `~/github/CONVENTIONS.md` as a relative symlink to `claude-config/CONVENTIONS.md`
-2. Clone all your GitHub repos into `~/github/` (skips repos already present)
+2. Install Claude Code hooks (memory-guard) into `~/.claude/hooks/` and merge settings into `~/.claude/settings.json`
+3. Install a git post-merge hook to auto-sync hooks and CONVENTIONS.md on `git pull`
+4. Clone all your GitHub repos into `~/github/` (skips repos already present)
 
 ## What's in CONVENTIONS.md
 
@@ -209,14 +211,16 @@ MIT
 ## クイックスタート
 
 ```bash
-mkdir -p ~/Claude && cd ~/Claude
+mkdir -p ~/github && cd ~/github
 gh repo clone <your-username>/claude-config
 cd claude-config && ./setup.sh
 ```
 
 `setup.sh` が行うこと:
 1. `~/github/CONVENTIONS.md` → `claude-config/CONVENTIONS.md` の相対 symlink を作成
-2. GitHub 上の全リポを `~/github/` 以下に clone（既存はスキップ）
+2. Claude Code hooks（memory-guard）を `~/.claude/hooks/` にインストールし、`~/.claude/settings.json` に設定をマージ
+3. git post-merge hook をインストール（`git pull` 後に hooks と CONVENTIONS.md を自動同期）
+4. GitHub 上の全リポを `~/github/` 以下に clone（既存はスキップ）
 
 ## CONVENTIONS.md の構成
 
