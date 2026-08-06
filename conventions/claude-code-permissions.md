@@ -1,7 +1,7 @@
 <!-- doc-meta
 when: Claude Code の permission prompt 削減・deny/ask/allow 設計を触るとき
 category: harness-core
-summary: Claude Code CLI の permission プロンプト削減 (= cwd 外 file 〔`~/Downloads` 等〕の Read/Edit/Write が毎回確認される症状を `additionalDirectories` で cwd 同様に無確認化、 bare tool allow は cwd 外を素通ししない observed〔docs 解釈と食い違い〕、 deny > ask > allow で機密は `deny` 優先、 setup.sh `configure_permissions` は `allow` のみ触る = additionalDirectories/deny は直書き永続、 settings 反映は次セッション、 #chat-link-rendering-scope = chat 応答内の markdown link `[label](path)` を click した右パネル rendering も同 scope〔session cwd + additionalDirectories〕に従い scope 外は「読み取れませんでした / 作業ディレクトリの外」 表示〔#rc-chat-panel-no-render = Remote Control 閲覧では scope 通過でも同一 error で render 不可 = file が worker host 側にのみ在る、 唯一 RC で完結する対処 = 内容を chat 本文に出させる、 observed n=1〕、 frontend 3 系統切り分け〔CLI settings.json / Claude Code デスクトップ Tool policy / macOS TCC〕、 §always-approve-tools = permission 設定で抑止できない always-prompt tool class〔`ccd_session_mgmt__search_session_transcripts` 等 cross-session tool は `allow` 登録でも承認チップが出る = 経路を外す以外に消せない、 token-handshake 返送への含意込み〕、 #ask-pattern-action-anchor = 高 stakes Bash gate の ask パターンは file 名 substring でなく不可逆 action の実行形〔`--send` 等の explicit flag〕に anchor〔ask > allow ゆえ allow で例外を彫れない = パターン絞りが唯一の手段・tool 側は fail-safe 既定・gate 対象 invocation は chain 禁止〕)
+summary: Claude Code CLI の permission プロンプト削減 (= cwd 外 file 〔`~/Downloads` 等〕の Read/Edit/Write が毎回確認される症状を `additionalDirectories` で cwd 同様に無確認化、 bare tool allow は cwd 外を素通ししない observed〔docs 解釈と食い違い〕、 deny > ask > allow で機密は `deny` 優先、 setup.sh `configure_permissions` は `allow` のみ触る = additionalDirectories/deny は直書き永続、 settings 反映は次セッション、 #chat-link-rendering-scope = chat 応答内の markdown link `[label](path)` を click した右パネル rendering も同 scope〔session cwd + additionalDirectories〕に従い scope 外は「読み取れませんでした / 作業ディレクトリの外」 表示〔#rc-chat-panel-no-render = Remote Control 閲覧では scope 通過でも同一 error で render 不可 = file が worker host 側にのみ在る、 唯一 RC で完結する対処 = 内容を chat 本文に出させる、 observed n=1〕、 frontend 3 系統切り分け〔CLI settings.json / Claude Code デスクトップ Tool policy / macOS TCC〕、 §always-approve-tools = permission 設定で抑止できない always-prompt tool class〔`ccd_session_mgmt__search_session_transcripts` 等 cross-session tool は `allow` 登録でも承認チップが出る = 経路を外す以外に消せない、 token-handshake 返送への含意込み〕、 #cd-always-allow = `cd` は navigation で不可逆 action を持たないので `allow` に入れて一拍を消す〔`Bash(cd *)` と `Bash(cd:*)` の 2 形併記 = UI 生成形と docs 形の混在対策、 compound `cd && cmd` は chain 単位判定ゆえ残りうる〔未実測〕、 本筋は絶対パスで cd を使わないこと、 空白を含む rule は setup.sh の `SAFE_TOOLS` に入れると word splitting で壊れるので settings.json 直書き〕、 #ask-pattern-action-anchor = 高 stakes Bash gate の ask パターンは file 名 substring でなく不可逆 action の実行形〔`--send` 等の explicit flag〕に anchor〔ask > allow ゆえ allow で例外を彫れない = パターン絞りが唯一の手段・tool 側は fail-safe 既定・gate 対象 invocation は chain 禁止〕)
 -->
 # Claude Code の permission プロンプトを減らす (additionalDirectories と working directory 境界)
 
@@ -143,6 +143,21 @@ PreToolUse hook (mail 誤送信 guard 等) は desktop で出力 honor されず
 - **該当が確認できている tool**: `ccd_session_mgmt__search_session_transcripts` (= 直接観測のみ)。 同 server の cross-session 系 (`send_message` / `archive_session` 等) も同機構で同挙動と**推定**されるが直接観測は search のみ。 `list_sessions` も allow 済だが挙動は未観測 (= 過度に一般化しない、 inline §3「単一観測を universal に飛躍させない」)。
 
 **token-handshake 返送への含意** ([`multi-session-coordination.md §7`](multi-session-coordination.md#spawn-handoff-token-return)): 返送の **optional live-push** (`search_session_transcripts(<token>)` → `send_message`) はこの always-prompt class を必ず通るので、 **起票元へ返すたびにチップが出る** (= allow-list で消せない)。 チップを踏まずに結果を届けたいなら、 §7 の **required spine = "results inbox" marker** (= 子の完了 action で marker を 1 個落とし、 surfacing 機構が拾う) に寄せる。 marker 経路は cross-session tool を呼ばないのでチップが出ない。
+
+## <a id="cd-always-allow"></a>`cd` は allow に入れて navigation の一拍を消す (2026-08-06)
+
+`cd` は working directory を移すだけの navigation で、それ自体は不可逆 action を持たない。にもかかわらず確認が挟まると、探索のたびに一拍が入る。`~/.claude/settings.json` の `permissions.allow` に入れて外す:
+
+```json
+"Bash(cd *)",
+"Bash(cd:*)"
+```
+
+**2 形を併記する理由**: permission UI が「常に許可」で生成する rule は `Bash(<cmd>:*)` 形、docs の prefix wildcard は `Bash(<cmd> *)` 形で、実際の settings.json には両形が混在する。どちらが match するかを都度考えないために両方書く (= 冗長だが害が無い)。
+
+⚠️ **compound では消えないことがある**: `cd <dir> && <cmd>` のような chain は判定が Bash command 文字列単位なので (= §ask-pattern-action-anchor 3 と同じ chain 単位)、`cd` 単体の allow だけでは prompt が残りうる。**prompt を構造的に減らす本筋は「cd を使わず絶対パスで叩く」**で、この allow はそれでも cd が要る場面 (単体の `cd`、chain の片側) 用。⚠️ chain 側の挙動は未実測 (= §反映タイミングにより、設定した session 内では検証できない)。
+
+⚠️ **setup.sh の `SAFE_TOOLS` には入れない**: `configure_permissions()` の追加ループは `for TOOL in $(... jq -r '.[]')` で word splitting するため、**空白を含む entry (`Bash(cd *)`) は 2 語に割れて allow list を壊す**。空白を含む rule 形は settings.json に直書きする (= §このリポ (claude-config) の setup.sh との関係 のとおり、直書きは setup 再走でも消えない)。
 
 ## 個人ごとの適用
 
